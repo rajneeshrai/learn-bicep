@@ -1,10 +1,12 @@
 // Example of creating app service plan
 
-@description('The app service plan name')
-param name string = 'azbicep-dev-asp1'
+param pAppServicePlanWindows string
+param pAppServicePlanLinux string
+param pWebApplication string
+param pAppInsights string
 
 resource appServicePlanWindows 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: name
+  name: pAppServicePlanWindows
   location: resourceGroup().location
   sku: {
     name: 'F1'
@@ -12,7 +14,7 @@ resource appServicePlanWindows 'Microsoft.Web/serverfarms@2022-09-01' = {
   }
 }
 resource appServicePlanLinux 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: 'azbicep-dev-linux-asp1'
+  name: pAppServicePlanLinux
   kind: 'linux'
   properties: {
     reserved: true
@@ -25,10 +27,10 @@ resource appServicePlanLinux 'Microsoft.Web/serverfarms@2022-09-01' = {
 }
 
 resource webApplication 'Microsoft.Web/sites@2021-01-15' = {
-  name: 'azbicep-dev-wapp1-46dg63dh42'
+  name: pWebApplication
   location: resourceGroup().location
   properties: {
-    serverFarmId: resourceId('Microsoft.Web/serverfarms', name)
+    serverFarmId: resourceId('Microsoft.Web/serverfarms', pAppServicePlanWindows)
   }
   dependsOn: [
     appServicePlanWindows
@@ -42,7 +44,7 @@ resource webApplicationAppSetings 'Microsoft.Web/sites/config@2022-09-01' = {
     appSettings: [
       {
         name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-        value: appInsightsComponents.properties.InstrumentationKey
+        value: appInsights.properties.InstrumentationKey
       }
       {
         name: 'key2'
@@ -56,8 +58,8 @@ resource webApplicationAppSetings 'Microsoft.Web/sites/config@2022-09-01' = {
   }
 }
 
-resource appInsightsComponents 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'azbicep-dev-wapp1-46dg63dh42-ai'
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: pAppInsights
   location: resourceGroup().location
   kind: 'web'
   properties: {

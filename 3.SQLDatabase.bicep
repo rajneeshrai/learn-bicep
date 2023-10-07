@@ -1,5 +1,8 @@
+param pSqlServer string
+param pSqlServerDatabase string
+
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
-  name: 'azbicep-dev-sqlserver'
+  name: pSqlServer
   location: resourceGroup().location
   properties: {
     administratorLogin: 'superadmin'
@@ -16,10 +19,9 @@ resource sqlServerFirewallRules 'Microsoft.Sql/servers/firewallRules@2021-11-01'
   }
 }
 
-
 resource sqlServerDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
   parent: sqlServer
-  name: 'database1'
+  name: pSqlServerDatabase
   location: resourceGroup().location
   properties: {
     collation: 'SQL_Latin1_General_CP1_CI_AS'
