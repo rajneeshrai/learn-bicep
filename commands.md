@@ -1,3 +1,6 @@
+*Bicep documentation*
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep
+
 az deployment group create -g rg-azbicep-resourcegroup -f 2.AppServicePlan.bicep
 az group delete -n rg-bicep-dev-cin -y
 az deployment sub create -l centralindia -f 1.ResourceGroup.bicep
