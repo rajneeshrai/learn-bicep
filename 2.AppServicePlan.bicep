@@ -3,7 +3,7 @@
 param pAppServicePlanWindows string
 param pAppServicePlanLinux string
 param pWebApplication string
-param pAppInsights string
+param pInstrumentationKey string
 
 resource appServicePlanWindows 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: pAppServicePlanWindows
@@ -44,7 +44,7 @@ resource webApplicationAppSetings 'Microsoft.Web/sites/config@2022-09-01' = {
     appSettings: [
       {
         name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-        value: appInsights.properties.InstrumentationKey
+        value: pInstrumentationKey
       }
       {
         name: 'key2'
@@ -55,14 +55,5 @@ resource webApplicationAppSetings 'Microsoft.Web/sites/config@2022-09-01' = {
         value: '6.9.1'
       }
     ]
-  }
-}
-
-resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: pAppInsights
-  location: resourceGroup().location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
   }
 }

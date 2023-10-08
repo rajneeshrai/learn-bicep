@@ -9,10 +9,17 @@ param pSqlServerDatabase string = 'database1'
 module AppServicePlan '2.AppServicePlan.bicep' = {
   name: 'AppServicePlan'
   params: {
-    pAppInsights: pAppInsights
     pAppServicePlanLinux: pAppServicePlanLinux
     pAppServicePlanWindows: pAppServicePlanWindows
     pWebApplication: pWebApplication
+    pInstrumentationKey: AppInsights.outputs.oInstrumentationKey
+  }
+}
+
+module AppInsights '4.AppInsights.bicep' = {
+  name: 'AppInsights'
+  params: {
+    pAppInsights: pAppInsights
   }
 }
 
