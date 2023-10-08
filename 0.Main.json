@@ -1,0 +1,281 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.22.6.54827",
+      "templateHash": "9901699036418066976"
+    }
+  },
+  "parameters": {
+    "pAppServicePlanWindows": {
+      "type": "string",
+      "defaultValue": "azbicep-centralindia-dev-windows-asp"
+    },
+    "pAppServicePlanLinux": {
+      "type": "string",
+      "defaultValue": "azbicep-centralindia-dev-linux-asp"
+    },
+    "pWebApplication": {
+      "type": "string",
+      "defaultValue": "azbicep-centralindia-dev-wapp-46dg63dh42"
+    },
+    "pAppInsights": {
+      "type": "string",
+      "defaultValue": "azbicep-centralindia-dev-wapp-46dg63dh42-ai"
+    },
+    "pSqlServer": {
+      "type": "string",
+      "defaultValue": "azbicep-centralindia-dev-sqlserver"
+    },
+    "pSqlServerDatabase": {
+      "type": "string",
+      "defaultValue": "database1"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "AppServicePlan",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "pAppServicePlanLinux": {
+            "value": "[parameters('pAppServicePlanLinux')]"
+          },
+          "pAppServicePlanWindows": {
+            "value": "[parameters('pAppServicePlanWindows')]"
+          },
+          "pWebApplication": {
+            "value": "[parameters('pWebApplication')]"
+          },
+          "pInstrumentationKey": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'AppInsights'), '2022-09-01').outputs.oInstrumentationKey.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "10184540747286172943"
+            }
+          },
+          "parameters": {
+            "pAppServicePlanWindows": {
+              "type": "string"
+            },
+            "pAppServicePlanLinux": {
+              "type": "string"
+            },
+            "pWebApplication": {
+              "type": "string"
+            },
+            "pInstrumentationKey": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2022-09-01",
+              "name": "[parameters('pAppServicePlanWindows')]",
+              "location": "[resourceGroup().location]",
+              "sku": {
+                "name": "F1",
+                "capacity": 1
+              }
+            },
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2022-09-01",
+              "name": "[parameters('pAppServicePlanLinux')]",
+              "kind": "linux",
+              "properties": {
+                "reserved": true
+              },
+              "location": "[resourceGroup().location]",
+              "sku": {
+                "name": "F1",
+                "capacity": 1
+              }
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2021-01-15",
+              "name": "[parameters('pWebApplication')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('pAppServicePlanWindows'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('pAppServicePlanWindows'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/sites/config",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}/{1}', parameters('pWebApplication'), 'web')]",
+              "properties": {
+                "appSettings": [
+                  {
+                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                    "value": "[parameters('pInstrumentationKey')]"
+                  },
+                  {
+                    "name": "key2",
+                    "value": "value2"
+                  },
+                  {
+                    "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                    "value": "6.9.1"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('pWebApplication'))]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'AppInsights')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "AppInsights",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "pAppInsights": {
+            "value": "[parameters('pAppInsights')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "6797646389505821593"
+            }
+          },
+          "parameters": {
+            "pAppInsights": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('pAppInsights')]",
+              "location": "[resourceGroup().location]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web"
+              }
+            }
+          ],
+          "outputs": {
+            "oInstrumentationKey": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('pAppInsights')), '2020-02-02').InstrumentationKey]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "SQLDatabase",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "pSqlServer": {
+            "value": "[parameters('pSqlServer')]"
+          },
+          "pSqlServerDatabase": {
+            "value": "[parameters('pSqlServerDatabase')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.22.6.54827",
+              "templateHash": "12285209023521154147"
+            }
+          },
+          "parameters": {
+            "pSqlServer": {
+              "type": "string"
+            },
+            "pSqlServerDatabase": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Sql/servers",
+              "apiVersion": "2021-11-01",
+              "name": "[parameters('pSqlServer')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "administratorLogin": "superadmin",
+                "administratorLoginPassword": "Test@123"
+              }
+            },
+            {
+              "type": "Microsoft.Sql/servers/firewallRules",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('pSqlServer'), 'Rajneesh''s ip address')]",
+              "properties": {
+                "startIpAddress": "1.1.1.1",
+                "endIpAddress": "1.1.1.1"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('pSqlServer'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/{1}', parameters('pSqlServer'), parameters('pSqlServerDatabase'))]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Basic",
+                "maxSizeBytes": "34359738368",
+                "requestedServiceObjectiveName": "Basic"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('pSqlServer'))]"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

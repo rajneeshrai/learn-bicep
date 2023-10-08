@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "pAppServicePlanWindows": {
+            "value": "azbicep-centralindia-dev-windows-asp"
+        },
+        "pAppServicePlanLinux": {
+            "value": "azbicep-centralindia-dev-linux-asp"
+        },
+        "pWebApplication": {
+            "value": "azbicep-centralindia-dev-wapp-46dg63dh42"
+        },
+        "pAppInsights": {
+            "value": "azbicep-centralindia-dev-wapp-46dg63dh42-ai"
+        },
+        "pSqlServer": {
+            "value": "azbicep-centralindia-dev-sqlserver"
+        },
+        "pSqlServerDatabase": {
+            "value": "database1"
+        }
+    }
+}

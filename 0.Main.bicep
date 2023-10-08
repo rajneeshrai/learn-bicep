@@ -1,10 +1,10 @@
-param pAppServicePlanWindows string = 'azbicep-centralindia-dev-windows-asp'
-param pAppServicePlanLinux string = 'azbicep-centralindia-dev-linux-asp'
-param pWebApplication string = 'azbicep-centralindia-dev-wapp-46dg63dh42'
-param pAppInsights string = 'azbicep-centralindia-dev-wapp-46dg63dh42-ai'
+param pAppServicePlanWindows string
+param pAppServicePlanLinux string
+param pWebApplication string
+param pAppInsights string
 
-param pSqlServer string = 'azbicep-centralindia-dev-sqlserver'
-param pSqlServerDatabase string = 'database1'
+param pSqlServer string
+param pSqlServerDatabase string
 
 module AppServicePlan '2.AppServicePlan.bicep' = {
   name: 'AppServicePlan'
